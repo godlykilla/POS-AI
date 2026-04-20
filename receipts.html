@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Receipt Logs - POS</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="logic-data.js"></script>
+    <script src="receipts-logic.js"></script>
+    <style>
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--sidebar-dark);
+            display: flex;
+            gap: 20px;
+            padding: 15px 30px;
+        }
+        .admin-container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .admin-card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        
+        .log-entry:hover { background: #f8fafc; }
+        .log-details { border-top: 1px solid #f1f5f9; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html"><span>🏠</span>HUB</a>
+    <a href="pos.html"><span>🛒</span>TERMINAL</a>
+    <a href="kitchen.html"><span>🍳</span>KITCHEN</a>
+    <a href="receipts.html"><span>📄</span>RECEIPTS</a>
+    <a href="admin.html"><span>⚙️</span>ADMIN</a>
+</nav>
+
+<div class="admin-container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <h1 style="font-weight: 900; margin:0;">Receipt History</h1>
+        <button onclick="handlePurge()" style="background: var(--danger-red); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+            PURGE ALL LOGS
+        </button>
+    </div>
+
+    <div class="admin-card" style="padding: 0;">
+        <div id="logs-container"></div>
+    </div>
+</div>
+
+<script>
+    window.onload = () => {
+        renderReceipts();
+    };
+</script>
+
+</body>
+</html>

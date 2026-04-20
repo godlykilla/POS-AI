@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kitchen Display System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="logic-data.js"></script>
+    <style>
+        .kitchen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; height: calc(100vh - 100px); }
+        .kitchen-col { background: #e2e8f0; border-radius: 15px; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .order-tile { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; user-select: none; border-left: 8px solid var(--accent-blue); animation: fadeIn 0.3s ease; }
+        .order-tile.ready { border-left-color: var(--accent-emerald); opacity: 0.9; }
+        .order-header { display: flex; justify-content: space-between; font-weight: 900; font-size: 1.4rem; border-bottom: 2px solid #eee; margin-bottom: 10px; padding-bottom: 5px; }
+        .item-line { font-size: 1.1rem; margin-bottom: 5px; }
+        .mod-line { font-size: 0.9rem; color: gray; margin-left: 15px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        nav { position: sticky; top: 0; z-index: 1000; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html"><span>🏠</span>HUB</a>
+    <a href="pos.html"><span>🛒</span>TERMINAL</a>
+    <a href="kitchen.html"><span>🍳</span>KITCHEN</a>
+    <a href="receipts.html"><span>📄</span>RECEIPTS</a>
+    <a href="admin.html"><span>⚙️</span>ADMIN</a>
+</nav>
+
+<div style="flex:1;">
+    <h1 style="padding: 20px 20px 0 20px; margin:0;">Kitchen Monitor</h1>
+    <div class="kitchen-grid">
+        <div class="kitchen-col">
+            <div style="font-weight:900; text-transform:uppercase;">Preparing</div>
+            <div id="preparing-list"></div>
+        </div>
+        <div class="kitchen-col">
+            <div style="font-weight:900; text-transform:uppercase;">Ready</div>
+            <div id="ready-list"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function renderKitchen() {
+        const logs = DataMgr.getLogs();
+        const prepList = document.getElementById('preparing-list');
+        const readyList = document.getElementById('ready-list');
+        
+        prepList.innerHTML = '';
+        readyList.innerHTML = '';
+
+        const activeOrders = logs.filter(l => l.status !== 'archived');
+
+        activeOrders.forEach(order => {
+            const tile = document.createElement('div');
+            tile.className = `order-tile ${order.status === 'ready' ? 'ready' : ''}`;
+            
+            let itemsHtml = '';
+            order.cart.forEach(item => {
+                itemsHtml += `<div class="item-line"><strong>${item.name}</strong></div>`;
+                if (item.appliedModifiers) {
+                    item.appliedModifiers.forEach(m => {
+                        itemsHtml += `<div class="mod-line">+ ${m.name}</div>`;
+                    });
+                }
+                if (item.subItems) {
+                    item.subItems.forEach(si => {
+                        itemsHtml += `<div class="mod-line" style="color:blue;">• ${si.name}</div>`;
+                        (si.selectedMods || []).forEach(m => {
+                            itemsHtml += `<div class="mod-line" style="margin-left:25px;">+ ${m.name}</div>`;
+                        });
+                    });
+                }
+            });
+
+            tile.innerHTML = `
+                <div class="order-header">
+                    <span>#${order.orderNumber}</span>
+                    <span style="font-size:0.8rem; color:gray;">${order.timestamp.split(', ')[1] || ''}</span>
+                </div>
+                ${itemsHtml}
+            `;
+
+            tile.ondblclick = () => {
+                const nextStatus = order.status === 'preparing' ? 'ready' : 'archived';
+                DataMgr.updateLogStatus(order.id, nextStatus);
+                renderKitchen();
+                localStorage.setItem('pos_last_update', Date.now());
+            };
+
+            if (order.status === 'preparing') prepList.appendChild(tile);
+            else if (order.status === 'ready') readyList.appendChild(tile);
+        });
+    }
+
+    // THE FIX: Listen for storage events AND poll as a backup
+    window.addEventListener('storage', renderKitchen);
+
+    let lastSeenUpdate = localStorage.getItem('pos_last_update');
+    setInterval(() => {
+        const currentUpdate = localStorage.getItem('pos_last_update');
+        if (currentUpdate !== lastSeenUpdate) {
+            lastSeenUpdate = currentUpdate;
+            renderKitchen();
+        }
+    }, 1000);
+
+    window.onload = renderKitchen;
+</script>
+</body>
+</html>

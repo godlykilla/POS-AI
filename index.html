@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>POS System Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f1f5f9;
+        }
+        .hub-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            max-width: 900px;
+            padding: 40px;
+        }
+        .hub-card {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            text-decoration: none;
+            color: var(--sidebar-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .hub-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            background: var(--sidebar-dark);
+            color: white;
+        }
+        .hub-card span { font-size: 4rem; margin-bottom: 20px; }
+        .hub-card h2 { margin: 0; font-weight: 900; letter-spacing: -0.5px; }
+        .hub-card p { opacity: 0.7; font-weight: 600; margin-top: 10px; text-align: center; }
+        
+        .header-title {
+            position: absolute;
+            top: 60px;
+            text-align: center;
+            width: 100%;
+        }
+        .header-title h1 { font-weight: 900; font-size: 2.5rem; color: var(--sidebar-dark); margin: 0; }
+    </style>
+</head>
+<body>
+
+<div class="header-title">
+    <h1>Management Suite</h1>
+</div>
+
+<div class="hub-container">
+    <a href="pos.html" class="hub-card">
+        <span>🛒</span>
+        <h2>TERMINAL</h2>
+        <p>Open POS to process sales</p>
+    </a>
+    <a href="kitchen.html" class="hub-card">
+        <span>🍳</span>
+        <h2>KITCHEN</h2>
+        <p>Manage incoming orders</p>
+    </a>
+    <a href="receipts.html" class="hub-card">
+        <span>📄</span>
+        <h2>RECEIPTS</h2>
+        <p>View sales history & logs</p>
+    </a>
+    <a href="admin.html" class="hub-card">
+        <span>⚙️</span>
+        <h2>ADMIN</h2>
+        <p>Inventory & System Settings</p>
+    </a>
+</div>
+
+</body>
+</html>
